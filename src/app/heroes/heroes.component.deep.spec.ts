@@ -48,4 +48,35 @@ describe('HeroesComponent (deep tests)', () => {
       (heroComponentDebugElement, i) => expect(heroComponentDebugElement.componentInstance.hero).toBe(HEROES[i])
     );
   });
+
+  it('should call heroService.deleteHero when the Hero Component\'s delete button is clicked', () => {
+    spyOn(fixture.componentInstance, 'delete');
+    fixture.detectChanges();
+
+    const heroComponentsDebugElements = fixture.debugElement.queryAll(By.directive(HeroComponent));
+    heroComponentsDebugElements[0].query(By.css('button'))
+                                  .triggerEventHandler('click', { stopPropagation: () => {} });
+
+    expect(fixture.componentInstance.delete).toHaveBeenCalledWith(HEROES[0]);
+  });
+
+  it('should call heroService.deleteHero when the Hero Component\'s delete button is clicked v2', () => {
+    spyOn(fixture.componentInstance, 'delete');
+    fixture.detectChanges();
+
+    const heroComponentsDebugElements = fixture.debugElement.queryAll(By.directive(HeroComponent));
+    (heroComponentsDebugElements[0].componentInstance as HeroComponent).delete.emit(undefined);
+
+    expect(fixture.componentInstance.delete).toHaveBeenCalledWith(HEROES[0]);
+  });
+
+  it('should call heroService.deleteHero when the Hero Component\'s delete button is clicked v3', () => {
+    spyOn(fixture.componentInstance, 'delete');
+    fixture.detectChanges();
+
+    const heroComponentsDebugElements = fixture.debugElement.queryAll(By.directive(HeroComponent));
+    heroComponentsDebugElements[0].triggerEventHandler('delete', undefined);
+
+    expect(fixture.componentInstance.delete).toHaveBeenCalledWith(HEROES[0]);
+  });
 });
