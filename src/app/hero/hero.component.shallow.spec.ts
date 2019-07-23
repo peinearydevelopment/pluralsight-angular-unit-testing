@@ -11,6 +11,7 @@ describe('HeroComponent (shallow tests)', () => {
     // routerLink in our template shouldn't be live, we don't want it to actually try to route anywhere throughout our tests
 
     // need to be careful with this though as it can hide other issues, for instance, if we mistype element names/attributes
+    // look to heroes component shallow tests for a better way to handle this
     TestBed.configureTestingModule({
       declarations: [ HeroComponent ],
       schemas: [NO_ERRORS_SCHEMA] // tells angular that for this module, don't fail if you encounter an unknown element or attribute
@@ -34,6 +35,7 @@ describe('HeroComponent (shallow tests)', () => {
     expect(fixture.nativeElement.querySelector('a').textContent).toContain('Spider Dude');
 
     // debugElement is more like a wrapper around the nativeElement, more similar to jQuery
+    // also exposes additional elements that we might need(for instance if the component has a directive on it)
     expect(fixture.debugElement.query(By.css('a')).nativeElement.textContent).toContain('Spider Dude');
   });
 });
