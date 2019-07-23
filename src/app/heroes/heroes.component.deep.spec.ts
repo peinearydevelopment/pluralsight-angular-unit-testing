@@ -2,9 +2,22 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HeroesComponent } from './heroes.component';
 import { HeroService } from '../hero.service';
 import { HeroComponent } from '../hero/hero.component';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { NO_ERRORS_SCHEMA, Directive, Input } from '@angular/core';
 import { of } from 'rxjs';
 import { By } from '@angular/platform-browser';
+
+@Directive({
+  selector: '[routerLink]',
+  host: { '(click)': 'onClick()' }
+})
+export class RouterLinkDirectiveStub {
+  @Input('routerLink') linkParams: any;
+  navigatedTo: any = null;
+
+  onClick() {
+    this.navigatedTo = this.linkParams;
+  }
+}
 
 describe('HeroesComponent (deep tests)', () => {
   let fixture: ComponentFixture<HeroesComponent>;
@@ -23,12 +36,13 @@ describe('HeroesComponent (deep tests)', () => {
     TestBed.configureTestingModule({
       declarations: [
         HeroesComponent,
-        HeroComponent
+        HeroComponent,
+        RouterLinkDirectiveStub
       ],
       providers: [
         { provide: HeroService, useValue: mockHeroService }
       ],
-      schemas: [NO_ERRORS_SCHEMA] // this is to work with the issue of the missing app routing module
+      // schemas: [NO_ERRORS_SCHEMA] // this is to work with the issue of the missing app routing module
     });
 
     fixture = TestBed.createComponent(HeroesComponent);
@@ -92,5 +106,17 @@ describe('HeroesComponent (deep tests)', () => {
     fixture.detectChanges();
 
     expect(fixture.debugElement.query(By.css('ul')).nativeElement.textContent).toContain(name);
+  });
+
+  it('should have the correct route for the first hero', () => {
+    fixture.detectChanges();
+    const heroComponents = fixture.debugElement.queryAll(By.directive(HeroComponent));
+
+    const routerLink = heroComponents[0].query(By.directive(RouterLinkDirectiveStub))
+                                      .injector
+                                      .get(RouterLinkDirectiveStub);
+    heroComponents[0].query(By.css('a')).triggerEventHandler('click', undefined);
+
+    expect(routerLink.navigatedTo).toBe(`/detail/${HEROES[0].id}`);
   });
 });
