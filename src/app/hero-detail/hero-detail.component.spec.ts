@@ -80,6 +80,7 @@ describe('HeroDetailComponent', () => {
     expect(mockHeroService.updateHero).toHaveBeenCalled();
   }));
 
+  // async only works with promises, fakeasync works with either
   it('should call updateHero when save is called with promise', async(() => {
     mockHeroService.updateHero.and.returnValue(of({}));
     fixture.detectChanges();
