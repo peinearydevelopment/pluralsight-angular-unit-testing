@@ -34,7 +34,34 @@ export class HeroDetailComponent implements OnInit {
   }
 
  save(): void {
-    this.heroService.updateHero(this.hero)
-      .subscribe(() => this.goBack());
+    // makes code async to demonstrate how to unit test asynchronous code in angular
+    debounce(
+      () => this.heroService.updateHero(this.hero).subscribe(() => this.goBack()),
+      250,
+      false
+    )();
   }
+
+  savePromise(): void {
+    let p = new Promise((resolve) => {
+      this.heroService.updateHero(this.hero).subscribe(() => this.goBack());
+      resolve();
+    });
+  }
+}
+
+function debounce(func, wait, immediate) {
+    let timeout;
+    return function() {
+      const context = this,
+                    args = arguments;
+      const later = function() {
+        timeout = null;
+        if (!immediate) { func.apply(context, args); }
+      };
+      const callNow = immediate && !timeout;
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+      if (callNow) { func.apply(context, args); }
+    };
 }
